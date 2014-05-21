@@ -36,17 +36,23 @@ all_contents = ''
 end_offsets = []
 results = []
 
+line_counts = {}
 end_offset = 0
 Dir.glob('../tojam2014/source/**/*.hx') do |f|
   files << f
-  # c = File.read(f).gsub(/\s+/, '')
-  # c = File.read(f)
-  c = File.read(f).gsub(/\s{2,}/, '')
+  str = File.read(f)
+  line_counts[f] = str.lines.count
+  # c = str.gsub(/\s+/, '')
+  # c = str
+  c = str.gsub(/\s{2,}/, '')
   contents[f] = c
   all_contents << c
   end_offset += c.length
   end_offsets << end_offset
 end
+
+sorted_line_counts = line_counts.sort_by{|k,v| v}.reverse
+sorted_line_counts.each{|k,v| puts "#{v}\t#{k}"}
 
 # puts "Total Code Length: #{all_contents.length} characters" 
 # puts "File Offsets: #{end_offsets}"
@@ -107,13 +113,9 @@ sorted_top_matches = top_matches.sort_by{ |m| m[:similarity] }.reverse
 
 top_match = sorted_top_matches.first
 
-p top_search
-p top_match
-
-puts "Top Search: #{top_search[:str]}\n\n"
-puts "Top Search File: #{files[top_search[:file_index]]}\n\n"
-puts "Top Search Offset: #{top_search[:offset]}\n\n"
-puts "Top Match: #{top_match[:str]}\n\n"
-puts "Top Match File: #{files[top_match[:file_index]]}\n\n"
-puts "Top Match Offset: #{top_match[:offset]}\n\n"
-puts "Similarity: #{top_match[:similarity]}\n\n"
+puts ""
+puts "Search          : #{top_search[:str]}"
+puts "Match           : #{top_match[:str]}"
+puts "Search Location : #{files[top_search[:file_index]]}@#{top_search[:offset]}"
+puts "Match Location  : #{files[top_match[:file_index]]}@#{top_match[:offset]}"
+puts "Similarity      : #{top_match[:similarity]}"
